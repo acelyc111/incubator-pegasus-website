@@ -4,16 +4,16 @@ permalink: clients/java-client
 
 # 获取Java客户端
 
-项目地址：[Pegasus Java Client](https://github.com/XiaoMi/pegasus-java-client)
+项目地址：[Pegasus Java Client](https://github.com/apache/incubator-pegasus/tree/master/java-client)
 
 下载：
 
 ```bash
-git clone https://github.com/XiaoMi/pegasus-java-client.git
-cd pegasus-java-client
+git clone https://github.com/apache/incubator-pegasus.git
+cd java-client
 ```
 
-选择所使用的版本并构建，建议使用[最新的release版本](https://github.com/xiaomi/pegasus-java-client/releases)：
+选择所使用的版本并构建，建议使用[最新的release版本](https://github.com/apache/incubator-pegasus/tree/master/java-client)：
 
 ```bash
 git checkout v2.0.0
@@ -951,7 +951,7 @@ public PegasusTableInterface.CheckAndSetResult checkAndSet(String tableName, byt
 ### checkAndMutate
 checkAndMutate是[checkAndSet](#checkandset)的扩展版本：checkAndSet只允许set一个值，而checkAndMutate允许在单个原子操作中set或者del多个值。该接口从[Pegasus Java Client 1.11.0-thrift-0.11.0-inlined-release](https://github.com/XiaoMi/pegasus-java-client/releases/tag/1.11.0-thrift-0.11.0-inlined-release)版本开始提供。
 
-为此，我们提供了一个包装类[Mutations](https://github.com/XiaoMi/pegasus-java-client/blob/thrift-0.11.0-inlined/src/main/java/com/xiaomi/infra/pegasus/client/Mutations.java)，用户可以预先设置需要实施的set或者del操作。
+为此，我们提供了一个包装类[Mutations](https://github.com/apache/incubator-pegasus/blob/master/java-client/src/main/java/org/apache/pegasus/client/Mutations.java)，用户可以预先设置需要实施的set或者del操作。
 
 ```java
 class CheckAndMutateResult {
@@ -2072,7 +2072,7 @@ public Future<Pair<Pair<byte[], byte[]>, byte[]>> asyncNext();
 
 客户端流控的思路就是：
 * 首先定好总的QPS限制是多少（譬如10000/s），有多少个并发的客户端访问线程（譬如50个），然后计算出每个线程的QPS限制（譬如10000/50=200）。
-* 对于单个客户端线程，通过流控工具将QPS限制在期望的范围内。如果超过了QPS限制，就采用简单的sleep方式来等待。我们提供了一个流控工具类[com.xiaomi.infra.pegasus.tools.FlowController](https://github.com/XiaoMi/pegasus-java-client/blob/thrift-0.11.0-inlined/src/main/java/com/xiaomi/infra/pegasus/tools/FlowController.java)，把计算QPS和执行sleep的逻辑封装起来，方便用户使用。
+* 对于单个客户端线程，通过流控工具将QPS限制在期望的范围内。如果超过了QPS限制，就采用简单的sleep方式来等待。我们提供了一个流控工具类[com.xiaomi.infra.pegasus.tools.FlowController](https://github.com/apache/incubator-pegasus/blob/master/java-client/src/main/java/org/apache/pegasus/tools/FlowController.java)，把计算QPS和执行sleep的逻辑封装起来，方便用户使用。
 
 FlowController用法：
   * 构造函数接受一个QPS参数，用于指定流量限制，譬如单线程QPS只允许200/s，就传入200；
@@ -2210,7 +2210,7 @@ Pegasus的key和value都是原始的字节串（Java中就是byte[]），而用�
 
 对于value较大（>=2kb）的业务，我们推荐在客户端使用[facebook/Zstandard](https://github.com/facebook/zstd)压缩算法（简称 Zstd）对数据进行压缩，以减少value的数据长度，提升Pegasus的服务稳定性和读写性能。Zstd算法在压缩比和压缩速率上取得较好的平衡，适合通用场景。
 
-从Java Client 1.11.3版本开始，我们提供了Zstd压缩工具类[com.xiaomi.infra.pegasus.tools.ZstdWrapper](https://github.com/XiaoMi/pegasus-java-client/blob/thrift-0.11.0-inlined/src/main/java/com/xiaomi/infra/pegasus/tools/ZstdWrapper.java)，方便用户实现压缩功能。
+从Java Client 1.11.3版本开始，我们提供了Zstd压缩工具类[com.xiaomi.infra.pegasus.tools.ZstdWrapper](https://github.com/apache/incubator-pegasus/blob/master/java-client/src/main/java/org/apache/pegasus/tools/ZstdWrapper.java)，方便用户实现压缩功能。
 
 使用示例：
 ```java
@@ -2226,7 +2226,7 @@ Pegasus的key和value都是原始的字节串（Java中就是byte[]），而用�
     byte[] orginalValue = ZstdWrapper.decompress(compressedBuf);
 ```
 
-也可以参考测试用例代码 [TestZstdWrapper.java](https://github.com/XiaoMi/pegasus-java-client/blob/thrift-0.11.0-inlined/src/test/java/com/xiaomi/infra/pegasus/tools/TestZstdWrapper.java)。
+也可以参考测试用例代码 [TestZstdWrapper.java](https://github.com/apache/incubator-pegasus/blob/master/java-client/src/test/java/org/apache/pegasus/tools/TestZstdWrapper.java)。
 
 以上两个优化 [数据序列化](#数据序列化) 和 [数据压缩](#数据压缩) 可以在客户端同时使用，都是用客户端的CPU换取Pegasus集群的稳定性和读写性能。在通常情况下这都是值得的。
 
